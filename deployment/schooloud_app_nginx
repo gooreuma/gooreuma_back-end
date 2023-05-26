@@ -1,0 +1,15 @@
+server {
+	listen 80;
+
+	server_name api.schooloud.cloud;
+
+	location / {
+		try_files $uri @app;
+	}
+
+	location @app {
+		include uwsgi_params;
+		uwsgi_pass unix:/home/ubuntu/socket/uwsgi.sock;
+	}
+}
+

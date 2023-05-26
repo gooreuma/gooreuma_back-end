@@ -1,0 +1,29 @@
+on:
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]
+
+jobs:
+  build:
+    if: ${{ github.event.pull_request.merged }}
+    name: synchronization between local and remote repository
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+
+    - name: executing remote ssh commands with ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/ubuntu/schooloud_back
+          git checkout develop
+          git pull origin develop
+          cd /home/ubuntu/schooloud_back/schooloud
+          flask --app manage db migrate
+          flask --app manage db upgrade
+          sudo systemctl restart uwsgi

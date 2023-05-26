@@ -1,0 +1,16 @@
+[Unit]
+Description=uWSGI server for Schooloud Backend
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+Environment="SCHOOLOUD_ENV=real"
+PIDFile=/home/ubuntu/schooloud.pid
+WorkingDirectory=/home/ubuntu/schooloud_back
+ExecStart=/usr/bin/uwsgi --chunked-input-timeout 10 --ini /home/ubuntu/schooloud_back/deployment/uwsgi.ini
+ExecStop=/usr/bin/kill -9 ${MAINPID}
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
